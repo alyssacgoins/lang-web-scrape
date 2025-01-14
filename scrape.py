@@ -3,7 +3,7 @@ import requests as req
 import csv
 import array as arr
 
-""" Returns line-spaced paragraph data """
+""" Scrapes data from input webpage and saves body text to csv. """
 def scrape(page):
   # Requesting for the website
   web = req.get(page)
