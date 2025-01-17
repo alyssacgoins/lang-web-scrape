@@ -1,25 +1,31 @@
 from bs4 import BeautifulSoup
 import requests as req
 import csv
-import array as arr
+from clean import parse, rem_duplicates
 
 """ Scrapes data from input webpage and saves body text to csv. """
 def scrape(page):
-  # Requesting for the website
-  web = req.get(page)
+  # Retrieve html data from input webpage
+  try:
+    web = req.get(page)
 
-  # Creating a BeautifulSoup object and specifying the parser
-  soup = BeautifulSoup(web.text, "html.parser")
+    # Create BeautifulSoup object and specify parser
+    soup = BeautifulSoup(web.text, "html.parser")
 
-  for data in soup(['style', 'script']):
     # Remove tags
-    data.decompose()
+    for data in soup(['style', 'script']):
+      data.decompose()
 
-  input_var = ['']
-  for x in soup.stripped_strings:
-    input_var.append(x)
+    # Create string list of body text entries
+    csv_input = ['']
+    for string in soup.stripped_strings:
+      # csv_input.append(string)
+      parse(string, csv_input)
 
-  # # return data by retrieving the tag content
-  with open('body-text.csv', 'w') as csv_file:
-    writer = csv.writer(csv_file)
-    writer.writerow(input_var)
+    # Write list to csv file
+    with open('body-text.csv', 'w') as csv_file:
+      writer = csv.writer(csv_file)
+      writer.writerow(csv_input)
+    rem_duplicates()
+  except:
+    print("An exception occurred")
