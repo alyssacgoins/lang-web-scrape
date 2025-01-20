@@ -1,5 +1,4 @@
 from scrape import scrape
-from clean import rem_duplicates
 # This is a sample Python script.
 
 # Press ⌃R to execute it or replace it with your code.
@@ -14,8 +13,6 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
-    #scrape('https://www.bht-berlin.de/b-arch')
-    rem_duplicates()
-
+    scrape('https://www.bht-berlin.de/b-arch')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

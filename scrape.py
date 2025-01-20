@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests as req
-import csv
-from clean import parse, rem_duplicates
+from clean import parse
+import pandas as pd
 
 """ Scrapes data from input webpage and saves body text to csv. """
 def scrape(page):
@@ -18,14 +18,18 @@ def scrape(page):
 
     # Create string list of body text entries
     csv_input = ['']
-    for string in soup.stripped_strings:
-      # csv_input.append(string)
-      parse(string, csv_input)
 
-    # Write list to csv file
-    with open('body-text.csv', 'w') as csv_file:
-      writer = csv.writer(csv_file)
-      writer.writerow(csv_input)
-    rem_duplicates()
+    count = 0
+    for string in soup.stripped_strings:
+      count=count+1
+      parse(string, csv_input)
+      if count>20:
+        break
+
+    df = pd.DataFrame(csv_input)
+    df2 = df.drop_duplicates()
+    print(df2)
+    df2.to_csv("final_result.csv", index=False)
+
   except:
     print("An exception occurred")

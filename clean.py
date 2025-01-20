@@ -23,6 +23,9 @@ def parse(line, csv_list):
   elif '..' in line:
     print("Two dots: not adding this line")
     return
+  elif any(char.isdigit() for char in line):
+    print("Contains number: not adding this line")
+    return
   else:
     print("Adding.")
     for word in line.split():
@@ -32,7 +35,7 @@ def parse(line, csv_list):
     word is English. """
 def is_english(line):
   try:
-    header_info = {'app_id': '3d637214', 'app_key': '967ae2663b05f2416916bd5c712d9d21',
+    header_info = {'app_id': '3d637214', 'app_key': '',
               'Accept': 'application/json'}
     url = "https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/en-gb/" + line
     web = req.get(url=url, headers=header_info)
@@ -41,8 +44,3 @@ def is_english(line):
     print("An exception occurred processing english dictionary entry")
     return False
 
-""" Removes duplicates from cleaned csv. """
-def rem_duplicates():
-  df = pd.read_csv("body-text.csv")
-  df.drop_duplicates(keep='first', )
-  df.to_csv("final_result.csv")
