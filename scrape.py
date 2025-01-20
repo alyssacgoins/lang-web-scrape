@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests as req
-from clean import parse
+from clean import parse_line
 import pandas as pd
 
 """ Scrapes data from input webpage and saves body text to csv. """
@@ -19,17 +19,18 @@ def scrape(page):
     # Create string list of body text entries
     csv_input = ['']
 
-    count = 0
     for string in soup.stripped_strings:
-      count=count+1
-      parse(string, csv_input)
-      if count>20:
-        break
+      for word in string.split():
+        csv_input.append(word)
 
     df = pd.DataFrame(csv_input)
     df2 = df.drop_duplicates()
-    print(df2)
-    df2.to_csv("final_result.csv", index=False)
 
+    csv_input = ['']
+    for row in df2.iterrows():
+      parse_line(row[1][0], csv_input)
+
+    df2.to_csv("final_result.csv", index=False)
+  #
   except:
     print("An exception occurred")
