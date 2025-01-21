@@ -7,7 +7,7 @@ def process_word(word, csv_list):
   if is_valid_word(word):
     cleaned = rem_punctuation(word)
     csv_list.append(cleaned)
-    print(cleaned)
+    #print(cleaned)
 
 """ Return true if input word is valid according to the conditions below. """
 def is_valid_word(word):
@@ -92,7 +92,7 @@ def is_entirely_uppercase(word):
     word is English. """
 def is_english(line):
   try:
-    header_info = {'app_id': '', 'app_key': '',
+    header_info = {'app_id': '3d637214', 'app_key': '',
               'Accept': 'application/json'}
     url = "https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/en-gb/" + line
     web = req.get(url=url, headers=header_info)

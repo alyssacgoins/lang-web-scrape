@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests as req
 from clean import process_word
 import pandas as pd
-import threading
+import concurrent.futures
 
 """ Scrapes data from input webpage and saves body text to csv. """
 def scrape_body_text(url):
@@ -29,8 +29,22 @@ def handle_body_text(body_text_entries):
   dataframe = pd.DataFrame(body_text_entries)
   dataframe = dataframe.drop_duplicates()
 
+  # split dataframe
+  chunks = split_data(dataframe, 100)
+
+  with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
+    results = list(executor.map(worker, chunks))
+
+# Split the data into chunks
+def split_data(df, chunk_size):
+  list = df.values.flatten().tolist()
+  return [list[i:i + chunk_size] for i in range(0, len(list), chunk_size)]
+
+def row_iterator(dataframe):
   csv_list = ['']
-  for row in dataframe.iterrows():
-    word = row[1][0]
-    process_word(word, csv_list)
+  for item in dataframe:
+    process_word(item, csv_list)
   return csv_list
+
+def worker(dataframe):
+  row_iterator(dataframe)
