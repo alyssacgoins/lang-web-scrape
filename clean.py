@@ -1,7 +1,6 @@
 import string
 
 import requests as req
-import pandas as pd
 
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
@@ -25,9 +24,6 @@ def is_valid_word(word):
   # exclude english words
   # TODO: add a feature in which we specify home language (language to be excluded)
   elif is_english(word):
-    is_valid = False
-  # exclude ellipses
-  elif contains_ellipses(word):
     is_valid = False
   # exclude numbers
   elif contains_number(word):
@@ -96,7 +92,7 @@ def is_entirely_uppercase(word):
     word is English. """
 def is_english(line):
   try:
-    header_info = {'app_id': '3d637214', 'app_key': '',
+    header_info = {'app_id': '', 'app_key': '',
               'Accept': 'application/json'}
     url = "https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/en-gb/" + line
     web = req.get(url=url, headers=header_info)
