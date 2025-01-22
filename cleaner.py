@@ -38,7 +38,7 @@ def is_valid_word(word):
 def remove_punctuation(word):
   cleaned_word = word
   for char in word:
-    if char in string.punctuation:
+    if (char in string.punctuation) or (char == '»'):
       cleaned_word = remove_symbol(cleaned_word, char)
   return cleaned_word
 
