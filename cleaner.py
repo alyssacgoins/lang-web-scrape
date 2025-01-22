@@ -1,6 +1,7 @@
 import string
 import requests as req
 
+
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
   if is_valid_word(word):

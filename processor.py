@@ -4,9 +4,37 @@ import concurrent.futures
 import pandas as pd
 import csv
 
+articles =   ['der','die', 'das','den','dem','des', 'ein', 'eine', 'einer',
+              'einem', 'einen']
+
 """ Call processing functions """
 def process(url):
-  process_body_text(scrape_body_text(url))
+  body_text = soup_to_list(scrape_body_text(url))
+  process_body_text(body_text)
+
+
+""" Return input BeautifulSoup text in list form. """
+def soup_to_list(soup):
+  # create string list of body text entries
+  body_text_entries = ['']
+  for entry in soup.stripped_strings:
+
+    word_follows_article = False
+    for word in entry.split():
+      # if word directly follows an article, skip
+      if word_follows_article:
+        word_follows_article = False
+        continue
+      # if word is article, retrieve following word & append to list
+      if is_article(word):
+        substring = get_article_and_word(entry, word)
+        body_text_entries.append(substring)
+        word_follows_article = True
+      # append word to list
+      else:
+        body_text_entries.append(word)
+
+  return body_text_entries
 
 
 """ Execute concurrent cleaning for input body_text_entries and write data to
@@ -27,12 +55,31 @@ def process_body_text(body_text_entries):
         print(f"Source generated an exception")
 
 
+""" Return true if input word is an article. """
+def is_article(word):
+  return word in articles
+
+
+""" Return substring of input line containing input article and corresponding 
+    word. """
+def get_article_and_word(line, article):
+  # retrieve the substring of the line after first identified article
+  sub_line = line[line.find(article):]
+  # if article contains >1 space:
+  if sub_line.count(' ') >1:
+    end_index = sub_line.find(' ', sub_line.find(' ') + 1)
+    return sub_line[0:end_index]
+  else:
+    return sub_line
+
+
 """ Write input csv list to input csv file name.  """
 def write_body_text_to_csv(csv_list, csv_file_name):
-  # # return data by retrieving the tag content
+  # return data by retrieving the tag content
   with open(csv_file_name, 'a') as csv_file:
     writer = csv.writer(csv_file)
     writer.writerow(csv_list)
+
 
 """ Return input dataframe split into chunk_size-sized lists."""
 def split_data(dataframe, chunk_size):

@@ -13,11 +13,8 @@ def scrape_body_text(url):
     for data in soup(['style', 'script']):
       data.decompose()
 
-    # create string list of body text entries
-    body_text_entries = ['']
-    for entry in soup.stripped_strings:
-      for word in entry.split():
-        body_text_entries.append(word)
-    return body_text_entries
+    return soup
+
   except:
     print()
+
