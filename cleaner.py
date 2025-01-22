@@ -1,6 +1,8 @@
 import string
 import requests as req
 
+special_quotes = ['„', '»']
+
 
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
@@ -9,9 +11,6 @@ def process_word(word, csv_list):
     csv_list.append(cleaned)
     print(cleaned)
   return csv_list
-
-# word is valid if:
-
 
 
 """ Return true if input word is valid according to the conditions below. """
@@ -57,7 +56,7 @@ def contains_interior_punctuation(word):
 def remove_punctuation(word):
   cleaned_word = word
   for char in word:
-    if (char in string.punctuation) or (char == '»'):
+    if (char in string.punctuation) or (char in special_quotes):
       cleaned_word = remove_symbol(cleaned_word, char)
   return cleaned_word
 
