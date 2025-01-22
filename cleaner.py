@@ -10,6 +10,9 @@ def process_word(word, csv_list):
     print(cleaned)
   return csv_list
 
+# word is valid if:
+
+
 
 """ Return true if input word is valid according to the conditions below. """
 def is_valid_word(word):
@@ -30,8 +33,24 @@ def is_valid_word(word):
   # exclude phrases that contain no lower-case characters
   elif contains_all_uppercase(word):
     is_valid = False
+  elif contains_consecutive_uppercase(word):
+    is_valid = False
+  elif contains_interior_punctuation(word):
+    is_valid = False
   # return validity status
   return is_valid
+
+
+""" Return true if interior of input word contains punctuation (non-asterisk 
+    or dash)."""
+def contains_interior_punctuation(word):
+  spec_punc = ['!', '#', '$', '%', '&', '(', ')', '+','', '.', '/', ':', ';',
+  '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{','|', '}', '~', ',']
+  contains = False
+  for char in word:
+    if char in spec_punc:
+      contains = True
+  return contains
 
 
 """ Return input word with all punctuation removed. """
@@ -99,3 +118,12 @@ def get_english(word):
   except:
     print("An exception occurred processing english dictionary entry")
     return False
+
+
+""" Return true if input word contains consecutive uppercase characters. """
+def contains_consecutive_uppercase(word):
+  contains = False
+  for i in (0, len(word) -2):
+    if word[i].isupper() and word[i+1].isupper():
+      contains = True
+  return contains
