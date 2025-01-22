@@ -1,12 +1,13 @@
 import string
 import requests as req
 
+
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
   if is_valid_word(word):
     cleaned = remove_punctuation(word)
     csv_list.append(cleaned)
-    #print(cleaned)
+    print(cleaned)
   return csv_list
 
 
