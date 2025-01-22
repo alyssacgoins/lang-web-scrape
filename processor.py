@@ -29,7 +29,7 @@ def process_body_text(body_text_entries):
 
 """ Write input csv list to input csv file name.  """
 def write_body_text_to_csv(csv_list, csv_file_name):
-  # # return data by retrieving the tag content
+  # return data by retrieving the tag content
   with open(csv_file_name, 'a') as csv_file:
     writer = csv.writer(csv_file)
     writer.writerow(csv_list)
