@@ -7,10 +7,15 @@ special_quotes = ['„', '»']
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
   if is_valid_word(word):
+    # todo handle NC-djlbsdc should return djlbsdc
+    cleaned = remove_acronyms(word)
     cleaned = remove_punctuation(word)
     csv_list.append(cleaned)
     print(cleaned)
   return csv_list
+
+def remove_acronyms(word):
+  return word
 
 
 """ Return true if input word is valid according to the conditions below. """
@@ -30,22 +35,25 @@ def is_valid_word(word):
   elif contains_number(word):
     is_valid = False
   # exclude phrases that contain no lower-case characters
+  #todo handle NC-djlbsdc should return djlbsdc
   elif contains_all_uppercase(word):
     is_valid = False
-  elif contains_consecutive_uppercase(word):
-    is_valid = False
+  # elif contains_consecutive_uppercase(word):
+  #   is_valid = False
   elif contains_interior_punctuation(word):
     is_valid = False
   # return validity status
   return is_valid
 
 
+
 """ Return true if interior of input word contains punctuation (non-asterisk 
     or dash)."""
 def contains_interior_punctuation(word):
+  contains = False
+
   spec_punc = ['!', '#', '$', '%', '&', '(', ')', '+','', '.', '/', ':', ';',
   '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{','|', '}', '~', ',']
-  contains = False
   for char in word:
     if char in spec_punc:
       contains = True

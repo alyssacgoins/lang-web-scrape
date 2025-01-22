@@ -11,6 +11,7 @@ articles =   ['der','die', 'das','den','dem','des', 'ein', 'eine', 'einer',
 def process(url):
   body_text = soup_to_list(scrape_body_text(url))
   process_body_text(body_text)
+  remove_nbsp('body-text.csv')
 
 
 """ Return input BeautifulSoup text in list form. """
@@ -79,6 +80,17 @@ def write_body_text_to_csv(csv_list, csv_file_name):
   with open(csv_file_name, 'a') as csv_file:
     writer = csv.writer(csv_file)
     writer.writerow(csv_list)
+
+def remove_nbsp(csv_file_name):
+  with open(csv_file_name, 'r') as csv_file:
+    reader = csv.reader(csv_file)
+    rows = list(reader)
+
+    for row in rows:
+      row = (x.replace('\u00A0', ' ') for x in row)
+      with open ('finally.csv', 'a') as final:
+        writer = csv.writer(final)
+        writer.writerow(row)
 
 
 """ Return input dataframe split into chunk_size-sized lists."""
