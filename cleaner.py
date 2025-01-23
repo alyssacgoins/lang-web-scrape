@@ -1,7 +1,7 @@
 import string
 import requests as req
 
-special_quotes = ['„', '»']
+special_quotes = ['„', '“', '»']
 
 
 """ Validate and clean input word and append to input list. """
@@ -9,7 +9,7 @@ def process_word(word, csv_list):
   if is_valid_word(word):
     # todo handle NC-djlbsdc should return djlbsdc
     cleaned = remove_acronyms(word)
-    cleaned = remove_punctuation(word)
+    cleaned = remove_punctuation(cleaned)
     csv_list.append(cleaned)
     print(cleaned)
   return csv_list
@@ -38,8 +38,8 @@ def is_valid_word(word):
   #todo handle NC-djlbsdc should return djlbsdc
   elif contains_all_uppercase(word):
     is_valid = False
-  # elif contains_consecutive_uppercase(word):
-  #   is_valid = False
+  elif contains_consecutive_uppercase(word):
+    is_valid = False
   elif contains_interior_punctuation(word):
     is_valid = False
   # return validity status
