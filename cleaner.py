@@ -1,6 +1,8 @@
 import string
 import requests as req
 
+
+# Additional quotation marks not included in string.punctuation library.
 special_quotes = ['„', '“', '»']
 
 
