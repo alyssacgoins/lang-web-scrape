@@ -4,14 +4,26 @@ import concurrent.futures
 import pandas as pd
 import csv
 
+
+# List containing German-language articles
 articles =   ['der','die', 'das','den','dem','des', 'ein', 'eine', 'einer',
               'einem', 'einen']
+
 
 """ Call processing functions """
 def process(url):
   body_text = soup_to_list(scrape_body_text(url))
+  # clear csv files
+  [clear_file(file) for file in ['body-text.csv', 'finally.csv']]
   process_body_text(body_text)
   remove_nbsp('body-text.csv')
+
+
+""" Clear the contents of the file at input filename. """
+def clear_file(file_name):
+  f = open(file_name, 'w')
+  f.truncate()
+  f.close()
 
 
 """ Return input BeautifulSoup text in list form. """

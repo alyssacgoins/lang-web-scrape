@@ -7,15 +7,10 @@ special_quotes = ['„', '“', '»']
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
   if is_valid_word(word):
-    # todo handle NC-djlbsdc should return djlbsdc
-    cleaned = remove_acronyms(word)
-    cleaned = remove_punctuation(cleaned)
+    cleaned = remove_punctuation(word)
     csv_list.append(cleaned)
     print(cleaned)
   return csv_list
-
-def remove_acronyms(word):
-  return word
 
 
 """ Return true if input word is valid according to the conditions below. """
@@ -35,7 +30,6 @@ def is_valid_word(word):
   elif contains_number(word):
     is_valid = False
   # exclude phrases that contain no lower-case characters
-  #todo handle NC-djlbsdc should return djlbsdc
   elif contains_all_uppercase(word):
     is_valid = False
   elif contains_consecutive_uppercase(word):
@@ -110,7 +104,7 @@ def contains_all_uppercase(word):
 
 """ Return true if word is English. """
 def is_english(word):
-  return get_english==True
+  return get_english(word) ==True
 
 
 """ Executes API call to merriam-webster dictionary API for input word. """
