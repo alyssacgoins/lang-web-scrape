@@ -2,6 +2,10 @@ import string
 import requests as req
 
 
+# Additional quotation marks not included in string.punctuation library.
+special_quotes = ['„', '“', '»']
+
+
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
   if is_valid_word(word):
@@ -30,15 +34,33 @@ def is_valid_word(word):
   # exclude phrases that contain no lower-case characters
   elif contains_all_uppercase(word):
     is_valid = False
+  elif contains_consecutive_uppercase(word):
+    is_valid = False
+  elif contains_interior_punctuation(word):
+    is_valid = False
   # return validity status
   return is_valid
+
+
+
+""" Return true if interior of input word contains punctuation (non-asterisk 
+    or dash)."""
+def contains_interior_punctuation(word):
+  contains = False
+
+  spec_punc = ['!', '#', '$', '%', '&', '(', ')', '+','', '.', '/', ':', ';',
+  '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{','|', '}', '~', ',']
+  for char in word:
+    if char in spec_punc:
+      contains = True
+  return contains
 
 
 """ Return input word with all punctuation removed. """
 def remove_punctuation(word):
   cleaned_word = word
   for char in word:
-    if char in string.punctuation:
+    if (char in string.punctuation) or (char in special_quotes):
       cleaned_word = remove_symbol(cleaned_word, char)
   return cleaned_word
 
@@ -84,7 +106,7 @@ def contains_all_uppercase(word):
 
 """ Return true if word is English. """
 def is_english(word):
-  return get_english==True
+  return get_english(word) ==True
 
 
 """ Executes API call to merriam-webster dictionary API for input word. """
@@ -99,3 +121,12 @@ def get_english(word):
   except:
     print("An exception occurred processing english dictionary entry")
     return False
+
+
+""" Return true if input word contains consecutive uppercase characters. """
+def contains_consecutive_uppercase(word):
+  contains = False
+  for i in (0, len(word) -2):
+    if word[i].isupper() and word[i+1].isupper():
+      contains = True
+  return contains
