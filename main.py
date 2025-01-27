@@ -1,8 +1,7 @@
 from processor import process
 import argparse
+from cleaner import set_src_lang, set_target_lang
 
-src_lang = 'DE'
-target_lang = 'EN'
 
 # allowed source languages
 # todo expand out
@@ -29,8 +28,8 @@ if __name__ == '__main__':
 
     # use target lang arg if specified. otherwise, default 'EN' used.
     if args.target_lang is not None:
-        target_lang = args.target_lang
+        set_target_lang(args.target_lang)
     # use src lang arg if specified. otherwise, default 'DE' used.
     if args.src_lang is not None:
-        src_lang = args.src_lang
+        set_src_lang(args.src_lang)
     process(url)

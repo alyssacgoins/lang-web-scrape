@@ -1,11 +1,21 @@
 import string
 import requests as req
-from main import src_lang
 
 
 # Additional quotation marks not included in string.punctuation library.
 special_quotes = ['„', '“', '»']
 
+src_lang = 'DE'
+target_lang = 'EN'
+
+def set_src_lang(lang):
+  global src_lang
+  src_lang = lang
+
+
+def set_target_lang(lang):
+  global target_lang
+  target_lang = lang
 
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
