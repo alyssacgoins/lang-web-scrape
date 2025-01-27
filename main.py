@@ -14,10 +14,12 @@ target_lang_options = ['EN']
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--url', type=str, help='Page to scrape')
-    parser.add_argument('--src_lang', type=str, choices=src_lang_options,
+    parser.add_argument('--src_lang', type=str,
+                        choices=src_lang_options,
                         help='Original page language')
     parser.add_argument('--target_lang', type=str,
-                        choices=target_lang_options, help='Language to translate page')
+                        choices=target_lang_options,
+                        help='Language to translate page')
     args = parser.parse_args()
     return args
 

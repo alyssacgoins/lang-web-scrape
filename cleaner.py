@@ -58,10 +58,12 @@ def is_valid_word(word):
 def contains_interior_punctuation(word):
   contains = False
 
-  spec_punc = ['!', '#', '$', '%', '&', '(', ')', '+','', '.', '/', ':', ';',
-  '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{','|', '}', '~', ',']
+  valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+','', '.', '/',
+               ':', ';','<', '=', '>', '?', '@', '[', '\\', ']', '^',
+               '_', '`', '{','|', '}', '~', ',']
+
   for char in word:
-    if char in spec_punc:
+    if char in valid_symbols:
       contains = True
   return contains
 
