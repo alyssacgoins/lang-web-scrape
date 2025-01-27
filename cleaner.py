@@ -7,8 +7,8 @@ special_quotes = ['„', '“', '»']
 
 
 """ Validate and clean input word and append to input list. """
-def process_word(word, csv_list):
-  if is_valid_word(word):
+def process_word(word, src_lang, csv_list):
+  if is_valid_word(word, src_lang):
     cleaned = remove_punctuation(word)
     csv_list.append(cleaned)
     print(cleaned)
@@ -16,7 +16,7 @@ def process_word(word, csv_list):
 
 
 """ Return true if input word is valid according to the conditions below. """
-def is_valid_word(word):
+def is_valid_word(word, src_lang):
   is_valid = True
   # exclude blank entries
   if is_blank_word(word):
@@ -24,9 +24,8 @@ def is_valid_word(word):
   # exclude entries of length 1 or 2
   elif is_too_short(word):
     is_valid = False
-  # exclude english words
-  # TODO: add a feature in which we specify home language (language to be excluded)
-  elif is_english(word):
+  # exclude words in source language
+  elif is_src_lang(word, src_lang):
     is_valid = False
   # exclude numbers
   elif contains_number(word):
@@ -104,8 +103,9 @@ def contains_all_uppercase(word):
   return word.isupper()
 
 
+# todo adapt to multi-lang dictionaries
 """ Return true if word is English. """
-def is_english(word):
+def is_src_lang(word, src_lang):
   return get_english(word) ==True
 
 
