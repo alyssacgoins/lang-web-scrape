@@ -1,17 +1,37 @@
 from processor import process
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+import argparse
+from cleaner import set_src_lang, set_target_lang
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+# allowed source languages
+# todo expand out
+src_lang_options = ['DE']
+# allowed target languages
+# todo expand out
+target_lang_options = ['EN']
 
+""" Return URL from parsed command line arguments. """
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--url', type=str, help='Page to scrape')
+    parser.add_argument('--src_lang', type=str,
+                        choices=src_lang_options,
+                        help='Original page language')
+    parser.add_argument('--target_lang', type=str,
+                        choices=target_lang_options,
+                        help='Language to translate page')
+    args = parser.parse_args()
+    return args
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    process('https://www.bht-berlin.de/b-arch')
+    args = parse_args()
+    url = args.url
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    # use target lang arg if specified. otherwise, default 'EN' used.
+    if args.target_lang is not None:
+        set_target_lang(args.target_lang)
+    # use src lang arg if specified. otherwise, default 'DE' used.
+    if args.src_lang is not None:
+        set_src_lang(args.src_lang)
+    process(url)

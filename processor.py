@@ -4,7 +4,6 @@ import concurrent.futures
 import pandas as pd
 import csv
 
-
 # List containing German-language articles
 articles =   ['der','die', 'das','den','dem','des', 'ein', 'eine', 'einer',
               'einem', 'einen']
@@ -60,7 +59,7 @@ def process_body_text(body_text_entries):
   chunks = split_data(dataframe, 10)
 
   with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-    futures = list(executor.map(worker, chunks))
+    futures = list(executor.map(worker,chunks))
     for future in futures:
       try:
         write_body_text_to_csv(future, 'body-text.csv')
@@ -111,7 +110,8 @@ def split_data(dataframe, chunk_size):
   return [list[i:i + chunk_size] for i in range(0, len(list), chunk_size)]
 
 
-""" Return input csv list with each entry of input dataframe processed."""
+""" Return input csv list containing each entry of input dataframe, cleaned for
+    punctuation and target language. """
 def row_iterator(dataframe, csv_list):
   for item in dataframe:
     process_word(item, csv_list)
@@ -119,6 +119,6 @@ def row_iterator(dataframe, csv_list):
 
 
 """ Return row_iterator() method call for input dataframe and empty string 
-    list."""
+    list. """
 def worker(dataframe):
   return row_iterator(dataframe, [''])

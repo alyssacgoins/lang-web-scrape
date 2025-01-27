@@ -5,6 +5,17 @@ import requests as req
 # Additional quotation marks not included in string.punctuation library.
 special_quotes = ['„', '“', '»']
 
+src_lang = 'DE'
+target_lang = 'EN'
+
+def set_src_lang(lang):
+  global src_lang
+  src_lang = lang
+
+
+def set_target_lang(lang):
+  global target_lang
+  target_lang = lang
 
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
@@ -24,9 +35,8 @@ def is_valid_word(word):
   # exclude entries of length 1 or 2
   elif is_too_short(word):
     is_valid = False
-  # exclude english words
-  # TODO: add a feature in which we specify home language (language to be excluded)
-  elif is_english(word):
+  # exclude words in source language
+  elif is_src_lang(word, src_lang):
     is_valid = False
   # exclude numbers
   elif contains_number(word):
@@ -48,10 +58,12 @@ def is_valid_word(word):
 def contains_interior_punctuation(word):
   contains = False
 
-  spec_punc = ['!', '#', '$', '%', '&', '(', ')', '+','', '.', '/', ':', ';',
-  '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{','|', '}', '~', ',']
+  valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+','', '.', '/',
+               ':', ';','<', '=', '>', '?', '@', '[', '\\', ']', '^',
+               '_', '`', '{','|', '}', '~', ',']
+
   for char in word:
-    if char in spec_punc:
+    if char in valid_symbols:
       contains = True
   return contains
 
@@ -104,8 +116,9 @@ def contains_all_uppercase(word):
   return word.isupper()
 
 
+# todo adapt to multi-lang dictionaries
 """ Return true if word is English. """
-def is_english(word):
+def is_src_lang(word, src_lang):
   return get_english(word) ==True
 
 
