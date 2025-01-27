@@ -1,5 +1,6 @@
 import string
 import requests as req
+from main import src_lang
 
 
 # Additional quotation marks not included in string.punctuation library.
@@ -7,8 +8,8 @@ special_quotes = ['„', '“', '»']
 
 
 """ Validate and clean input word and append to input list. """
-def process_word(word, src_lang, csv_list):
-  if is_valid_word(word, src_lang):
+def process_word(word, csv_list):
+  if is_valid_word(word):
     cleaned = remove_punctuation(word)
     csv_list.append(cleaned)
     print(cleaned)
@@ -16,7 +17,7 @@ def process_word(word, src_lang, csv_list):
 
 
 """ Return true if input word is valid according to the conditions below. """
-def is_valid_word(word, src_lang):
+def is_valid_word(word):
   is_valid = True
   # exclude blank entries
   if is_blank_word(word):

@@ -1,21 +1,24 @@
 from processor import process
 import argparse
 
+src_lang = 'DE'
+target_lang = 'EN'
+
 # allowed source languages
 # todo expand out
-src_langs = ['DE']
+src_lang_options = ['DE']
 # allowed target languages
 # todo expand out
-target_langs = ['EN']
+target_lang_options = ['EN']
 
 """ Return URL from parsed command line arguments. """
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--url', type=str, help='Page to scrape')
-    parser.add_argument('--src_lang', type=str, choices=src_langs,
+    parser.add_argument('--src_lang', type=str, choices=src_lang_options,
                         help='Original page language')
     parser.add_argument('--target_lang', type=str,
-                        choices=target_langs, help='Language to translate page')
+                        choices=target_lang_options, help='Language to translate page')
     args = parser.parse_args()
     return args
 
@@ -23,8 +26,6 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     url = args.url
-    src_lang = 'DE'
-    target_lang = 'EN'
 
     # use target lang arg if specified. otherwise, default 'EN' used.
     if args.target_lang is not None:
@@ -32,4 +33,4 @@ if __name__ == '__main__':
     # use src lang arg if specified. otherwise, default 'DE' used.
     if args.src_lang is not None:
         src_lang = args.src_lang
-    process(url, src_lang)
+    process(url)

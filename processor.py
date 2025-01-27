@@ -4,18 +4,17 @@ import concurrent.futures
 import pandas as pd
 import csv
 
-
 # List containing German-language articles
 articles =   ['der','die', 'das','den','dem','des', 'ein', 'eine', 'einer',
               'einem', 'einen']
 
 
 """ Call processing functions """
-def process(url, source_lang):
+def process(url):
   body_text = soup_to_list(scrape_body_text(url))
   # clear csv files
   [clear_file(file) for file in ['body-text.csv', 'finally.csv']]
-  process_body_text(body_text, source_lang)
+  process_body_text(body_text)
   remove_nbsp('body-text.csv')
 
 
@@ -52,7 +51,7 @@ def soup_to_list(soup):
 
 """ Execute concurrent cleaning for input body_text_entries and write data to
     csv file. """
-def process_body_text(body_text_entries, src_lang):
+def process_body_text(body_text_entries):
   # remove duplicate words via pandas DataFrame
   dataframe = pd.DataFrame(body_text_entries)
   dataframe = dataframe.drop_duplicates()
@@ -60,7 +59,7 @@ def process_body_text(body_text_entries, src_lang):
   chunks = split_data(dataframe, 10)
 
   with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-    futures = list(executor.map(worker, src_lang,chunks))
+    futures = list(executor.map(worker,chunks))
     for future in futures:
       try:
         write_body_text_to_csv(future, 'body-text.csv')
@@ -112,13 +111,13 @@ def split_data(dataframe, chunk_size):
 
 
 """ Return input csv list with each entry of input dataframe processed."""
-def row_iterator(src_lang, dataframe, csv_list):
+def row_iterator(dataframe, csv_list):
   for item in dataframe:
-    process_word(item, src_lang, csv_list)
+    process_word(item, csv_list)
   return csv_list
 
 
 """ Return row_iterator() method call for input dataframe and empty string 
     list."""
-def worker(src_lang, dataframe):
-  return row_iterator(src_lang, dataframe, [''])
+def worker(dataframe):
+  return row_iterator(dataframe, [''])
