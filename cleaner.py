@@ -127,7 +127,7 @@ def contains_all_uppercase(word):
 
 # todo adapt to multi-lang dictionaries
 """ Return true if word is English. """
-def is_src_lang(word, src_lang):
+def is_src_lang(word, lang):
   return get_english(word) == True
 
 
@@ -140,8 +140,9 @@ def get_english(word):
            + word)
     web = req.get(url=url, headers=header_info)
     return web.ok
-  except:
-    print("An exception occurred processing english dictionary entry")
+  except Exception as exc:
+    print("An exception occurred processing english dictionary entry", exc)
+
     return False
 
 

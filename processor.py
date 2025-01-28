@@ -1,3 +1,5 @@
+from concurrent.futures.thread import ThreadPoolExecutor
+
 from cleaner import process_word
 from retriever import scrape_body_text
 import concurrent.futures
@@ -63,6 +65,7 @@ def process_body_text(body_text_entries):
         write_body_text_to_csv(future, 'body-text.csv')
       except Exception as exc:
         print(f"Source generated an exception")
+        raise Exception(exc)
 
 
 """ Return true if input word is an article. """
@@ -93,8 +96,8 @@ def write_body_text_to_csv(csv_list, csv_file_name):
 
 """ Return input dataframe split into chunk_size-sized lists."""
 def split_data(dataframe, chunk_size):
-  list = dataframe.values.flatten().tolist()
-  return [list[i:i + chunk_size] for i in range(0, len(list), chunk_size)]
+  df_list = dataframe.values.flatten().tolist()
+  return [df_list[i:i + chunk_size] for i in range(0, len(df_list), chunk_size)]
 
 
 """ Return input csv list containing each entry of input dataframe, cleaned for

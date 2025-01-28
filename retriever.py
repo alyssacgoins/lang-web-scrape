@@ -12,9 +12,7 @@ def scrape_body_text(url):
     # remove tags
     for data in soup(['style', 'script']):
       data.decompose()
-
     return soup
-
-  except:
-    print()
+  except Exception as exc:
+    raise Exception(exc)
 
