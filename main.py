@@ -13,15 +13,16 @@ target_lang_options = ['EN']
 """ Return URL from parsed command line arguments. """
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--url', type=str, help='Page to scrape')
+    parser.add_argument('--url', type=str, required=True,
+                        help='Page to scrape')
     parser.add_argument('--src_lang', type=str,
                         choices=src_lang_options,
                         help='Original page language')
     parser.add_argument('--target_lang', type=str,
                         choices=target_lang_options,
                         help='Language to translate page')
-    args = parser.parse_args()
-    return args
+    input_args = parser.parse_args()
+    return input_args
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -34,4 +35,5 @@ if __name__ == '__main__':
     # use src lang arg if specified. otherwise, default 'DE' used.
     if args.src_lang is not None:
         set_src_lang(args.src_lang)
+    # process input url
     process(url)

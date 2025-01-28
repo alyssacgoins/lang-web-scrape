@@ -1,27 +1,33 @@
 import string
 import requests as req
 
-
 # Additional quotation marks not included in string.punctuation library.
 special_quotes = ['„', '“', '»']
 
+# Language in which webpage is written
 src_lang = 'DE'
+
+# Language to translate webpage
 target_lang = 'EN'
 
+""" Set src_lang global var """
 def set_src_lang(lang):
   global src_lang
   src_lang = lang
 
 
+""" Set target_lang global var """
 def set_target_lang(lang):
   global target_lang
   target_lang = lang
+
 
 """ Validate and clean input word and append to input list. """
 def process_word(word, csv_list):
   if is_valid_word(word):
     cleaned = remove_punctuation(word)
-    csv_list.append(cleaned)
+    final = cleaned.replace('\u00A0', ' ')
+    csv_list.append(final)
     print(cleaned)
   return csv_list
 
@@ -29,6 +35,7 @@ def process_word(word, csv_list):
 """ Return true if input word is valid according to the conditions below. """
 def is_valid_word(word):
   is_valid = True
+
   # exclude blank entries
   if is_blank_word(word):
     is_valid = False
@@ -52,15 +59,14 @@ def is_valid_word(word):
   return is_valid
 
 
-
 """ Return true if interior of input word contains punctuation (non-asterisk 
     or dash)."""
 def contains_interior_punctuation(word):
   contains = False
 
-  valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+','', '.', '/',
-               ':', ';','<', '=', '>', '?', '@', '[', '\\', ']', '^',
-               '_', '`', '{','|', '}', '~', ',']
+  valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+', '', '.', '/',
+                   ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
+                   '_', '`', '{', '|', '}', '~', ',']
 
   for char in word:
     if char in valid_symbols:
@@ -71,6 +77,7 @@ def contains_interior_punctuation(word):
 """ Return input word with all punctuation removed. """
 def remove_punctuation(word):
   cleaned_word = word
+
   for char in word:
     if (char in string.punctuation) or (char in special_quotes):
       cleaned_word = remove_symbol(cleaned_word, char)
@@ -80,6 +87,7 @@ def remove_punctuation(word):
 """ Return input word with all instances of input symbol removed. """
 def remove_symbol(word, symbol):
   cleaned_word = word
+
   # remove symbol preceding a word
   if word.endswith(symbol):
     cleaned_word = word.split(symbol, 1)[0]
@@ -105,6 +113,7 @@ def is_blank_word(word):
 def is_too_short(word):
   return len(word) < 3
 
+
 """ Return true if input word contains a number. """
 def contains_number(word):
   return any(char.isdigit() for char in word)
@@ -118,8 +127,8 @@ def contains_all_uppercase(word):
 
 # todo adapt to multi-lang dictionaries
 """ Return true if word is English. """
-def is_src_lang(word, src_lang):
-  return get_english(word) ==True
+def is_src_lang(word, lang):
+  return get_english(word) == True
 
 
 """ Executes API call to merriam-webster dictionary API for input word. """
@@ -131,15 +140,17 @@ def get_english(word):
            + word)
     web = req.get(url=url, headers=header_info)
     return web.ok
-  except:
-    print("An exception occurred processing english dictionary entry")
+  except Exception as exc:
+    print("An exception occurred processing english dictionary entry", exc)
+
     return False
 
 
 """ Return true if input word contains consecutive uppercase characters. """
 def contains_consecutive_uppercase(word):
   contains = False
-  for i in (0, len(word) -2):
-    if word[i].isupper() and word[i+1].isupper():
+
+  for i in (0, len(word) - 2):
+    if word[i].isupper() and word[i + 1].isupper():
       contains = True
   return contains

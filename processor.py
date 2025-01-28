@@ -1,3 +1,5 @@
+from concurrent.futures.thread import ThreadPoolExecutor
+
 from cleaner import process_word
 from retriever import scrape_body_text
 import concurrent.futures
@@ -5,17 +7,15 @@ import pandas as pd
 import csv
 
 # List containing German-language articles
-articles =   ['der','die', 'das','den','dem','des', 'ein', 'eine', 'einer',
-              'einem', 'einen']
-
+articles = ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine', 'einer',
+            'einem', 'einen']
 
 """ Call processing functions """
 def process(url):
   body_text = soup_to_list(scrape_body_text(url))
   # clear csv files
-  [clear_file(file) for file in ['body-text.csv', 'finally.csv']]
+  clear_file('body-text.csv')
   process_body_text(body_text)
-  remove_nbsp('body-text.csv')
 
 
 """ Clear the contents of the file at input filename. """
@@ -59,12 +59,13 @@ def process_body_text(body_text_entries):
   chunks = split_data(dataframe, 10)
 
   with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-    futures = list(executor.map(worker,chunks))
+    futures = list(executor.map(worker, chunks))
     for future in futures:
       try:
         write_body_text_to_csv(future, 'body-text.csv')
       except Exception as exc:
         print(f"Source generated an exception")
+        raise Exception(exc)
 
 
 """ Return true if input word is an article. """
@@ -78,7 +79,7 @@ def get_article_and_word(line, article):
   # retrieve the substring of the line after first identified article
   sub_line = line[line.find(article):]
   # if article contains >1 space:
-  if sub_line.count(' ') >1:
+  if sub_line.count(' ') > 1:
     end_index = sub_line.find(' ', sub_line.find(' ') + 1)
     return sub_line[0:end_index]
   else:
@@ -92,22 +93,11 @@ def write_body_text_to_csv(csv_list, csv_file_name):
     writer = csv.writer(csv_file)
     writer.writerow(csv_list)
 
-def remove_nbsp(csv_file_name):
-  with open(csv_file_name, 'r') as csv_file:
-    reader = csv.reader(csv_file)
-    rows = list(reader)
-
-    for row in rows:
-      row = (x.replace('\u00A0', ' ') for x in row)
-      with open ('finally.csv', 'a') as final:
-        writer = csv.writer(final)
-        writer.writerow(row)
-
 
 """ Return input dataframe split into chunk_size-sized lists."""
 def split_data(dataframe, chunk_size):
-  list = dataframe.values.flatten().tolist()
-  return [list[i:i + chunk_size] for i in range(0, len(list), chunk_size)]
+  df_list = dataframe.values.flatten().tolist()
+  return [df_list[i:i + chunk_size] for i in range(0, len(df_list), chunk_size)]
 
 
 """ Return input csv list containing each entry of input dataframe, cleaned for
