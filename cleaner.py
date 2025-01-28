@@ -1,156 +1,147 @@
 import string
 import requests as req
 
-# Additional quotation marks not included in string.punctuation library.
-special_quotes = ['„', '“', '»']
+""" Clean web text. """
+class Cleaner:
 
-# Language in which webpage is written
-src_lang = 'DE'
+  """ Initialize Cleaner instance. """
+  def __init__(self, src, target):
+    self.src_lang = src
+    self.target_lang = target
 
-# Language to translate webpage
-target_lang = 'EN'
+  # Additional quotation marks not included in string.punctuation library.
+  special_quotes = ['„', '“', '»']
+  space = ' '
+  nbsp = '\u00A0'
 
-""" Set src_lang global var """
-def set_src_lang(lang):
-  global src_lang
-  src_lang = lang
+  """ Validate and clean input word and append to input list. """
+  def process_word(self, word, csv_list):
+    if self.is_valid_word(word):
+      cleaned = self.remove_punctuation(word)
+      final = cleaned.replace(self.nbsp, self.space)
+      csv_list.append(final)
+    return csv_list
 
+  """ Return true if input word is valid according to the conditions below. """
+  def is_valid_word(self, word):
+    is_valid = True
 
-""" Set target_lang global var """
-def set_target_lang(lang):
-  global target_lang
-  target_lang = lang
+    # exclude blank entries
+    if self.is_blank_word(word):
+      is_valid = False
+    # exclude entries of length 1 or 2
+    elif self.is_too_short(word):
+      is_valid = False
+    # exclude words in source language
+    elif self.is_src_lang(word, self.src_lang):
+      is_valid = False
+    # exclude numbers
+    elif self.contains_number(word):
+      is_valid = False
+    # exclude phrases that contain no lower-case characters
+    elif self.contains_all_uppercase(word):
+      is_valid = False
+    elif self.contains_consecutive_uppercase(word):
+      is_valid = False
+    elif self.contains_interior_punctuation(word):
+      is_valid = False
+    # return validity status
+    return is_valid
 
+  """ Return true if interior of input word contains punctuation (non-asterisk 
+      or dash)."""
+  @staticmethod
+  def contains_interior_punctuation(word):
+    contains = False
 
-""" Validate and clean input word and append to input list. """
-def process_word(word, csv_list):
-  if is_valid_word(word):
-    cleaned = remove_punctuation(word)
-    final = cleaned.replace('\u00A0', ' ')
-    csv_list.append(final)
-    print(cleaned)
-  return csv_list
+    valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+', '', '.', '/',
+                     ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
+                     '_', '`', '{', '|', '}', '~', ',']
 
+    for char in word:
+      if char in valid_symbols:
+        contains = True
+    return contains
 
-""" Return true if input word is valid according to the conditions below. """
-def is_valid_word(word):
-  is_valid = True
+  """ Return input word with all punctuation removed. """
+  @classmethod
+  def remove_punctuation(cls, word):
+    cleaned_word = word
 
-  # exclude blank entries
-  if is_blank_word(word):
-    is_valid = False
-  # exclude entries of length 1 or 2
-  elif is_too_short(word):
-    is_valid = False
-  # exclude words in source language
-  elif is_src_lang(word, src_lang):
-    is_valid = False
-  # exclude numbers
-  elif contains_number(word):
-    is_valid = False
-  # exclude phrases that contain no lower-case characters
-  elif contains_all_uppercase(word):
-    is_valid = False
-  elif contains_consecutive_uppercase(word):
-    is_valid = False
-  elif contains_interior_punctuation(word):
-    is_valid = False
-  # return validity status
-  return is_valid
+    for char in word:
+      if (char in string.punctuation) or (char in cls.special_quotes):
+        cleaned_word = cls.remove_symbol(cleaned_word, char)
+    return cleaned_word
 
+  """ Return input word with all instances of input symbol removed. """
+  @staticmethod
+  def remove_symbol(word, symbol):
+    cleaned_word = word
 
-""" Return true if interior of input word contains punctuation (non-asterisk 
-    or dash)."""
-def contains_interior_punctuation(word):
-  contains = False
+    # remove symbol preceding a word
+    if word.endswith(symbol):
+      cleaned_word = word.split(symbol, 1)[0]
+    # remove symbol at end of word
+    elif word.startswith(symbol):
+      cleaned_word = word.split(symbol, 1)[1]
+    # remove acronyms separated from word by symbol, as well as symbol
+    elif symbol in word:
+      cleaned_word = ''
+      for sect in word.split(symbol):
+        if not sect.isupper():
+          cleaned_word += sect
 
-  valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+', '', '.', '/',
-                   ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
-                   '_', '`', '{', '|', '}', '~', ',']
+    return cleaned_word
 
-  for char in word:
-    if char in valid_symbols:
-      contains = True
-  return contains
+  """ Return true if input word is empty string. """
+  @staticmethod
+  def is_blank_word(word):
+    return word == ''
 
+  """ Return true if input word is shorter than three characters. """
+  @staticmethod
+  def is_too_short(word):
+    return len(word) < 3
 
-""" Return input word with all punctuation removed. """
-def remove_punctuation(word):
-  cleaned_word = word
+  """ Return true if input word contains a number. """
+  @staticmethod
+  def contains_number(word):
+    return any(char.isdigit() for char in word)
 
-  for char in word:
-    if (char in string.punctuation) or (char in special_quotes):
-      cleaned_word = remove_symbol(cleaned_word, char)
-  return cleaned_word
+  """ Return true if input word is entirely uppercase. """
+  # todo is this extra method call necessary?
+  @staticmethod
+  def contains_all_uppercase(word):
+    return word.isupper()
 
+  # todo adapt to multi-lang dictionaries
+  """ Return true if word is English. """
+  @classmethod
+  def is_src_lang(cls, word, lang):
+    lang = ""
+    return cls.get_english(word) == True
 
-""" Return input word with all instances of input symbol removed. """
-def remove_symbol(word, symbol):
-  cleaned_word = word
+  """ Executes API call to merriam-webster dictionary API for input word. """
+  @staticmethod
+  def get_english(word):
+    try:
+      header_info = {'app_id': '3d637214', 'app_key': '',
+                     'Accept': 'application/json'}
+      url = (
+            "https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/en-gb/"
+            + word)
+      web = req.get(url=url, headers=header_info)
+      return web.ok
+    except Exception as exc:
+      print("An exception occurred processing english dictionary entry", exc)
+      return False
 
-  # remove symbol preceding a word
-  if word.endswith(symbol):
-    cleaned_word = word.split(symbol, 1)[0]
-  # remove symbol at end of word
-  elif word.startswith(symbol):
-    cleaned_word = word.split(symbol, 1)[1]
-  # remove acronyms separated from word by symbol, as well as symbol
-  elif symbol in word:
-    cleaned_word = ''
-    for sect in word.split(symbol):
-      if not sect.isupper():
-        cleaned_word += sect
+  """ Return true if input word contains consecutive uppercase characters. """
+  @staticmethod
+  def contains_consecutive_uppercase(word):
+    contains = False
 
-  return cleaned_word
-
-
-""" Return true if input word is empty string. """
-def is_blank_word(word):
-  return word == ''
-
-
-""" Return true if input word is shorter than three characters. """
-def is_too_short(word):
-  return len(word) < 3
-
-
-""" Return true if input word contains a number. """
-def contains_number(word):
-  return any(char.isdigit() for char in word)
-
-
-""" Return true if input word is entirely uppercase. """
-# todo is this extra method call necessary?
-def contains_all_uppercase(word):
-  return word.isupper()
-
-
-# todo adapt to multi-lang dictionaries
-""" Return true if word is English. """
-def is_src_lang(word, lang):
-  return get_english(word) == True
-
-
-""" Executes API call to merriam-webster dictionary API for input word. """
-def get_english(word):
-  try:
-    header_info = {'app_id': '3d637214', 'app_key': '',
-                   'Accept': 'application/json'}
-    url = ("https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/en-gb/"
-           + word)
-    web = req.get(url=url, headers=header_info)
-    return web.ok
-  except Exception as exc:
-    print("An exception occurred processing english dictionary entry", exc)
-
-    return False
-
-
-""" Return true if input word contains consecutive uppercase characters. """
-def contains_consecutive_uppercase(word):
-  contains = False
-
-  for i in (0, len(word) - 2):
-    if word[i].isupper() and word[i + 1].isupper():
-      contains = True
-  return contains
+    for i in (0, len(word) - 2):
+      if word[i].isupper() and word[i + 1].isupper():
+        contains = True
+    return contains
