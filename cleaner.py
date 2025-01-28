@@ -1,27 +1,26 @@
 import string
 import requests as req
 
+""" Clean web text. """
 class Cleaner:
+
+  """ Initialize Cleaner instance. """
+  def __init__(self, src, target):
+    self.src_lang = src
+    self.target_lang = target
 
   # Additional quotation marks not included in string.punctuation library.
   special_quotes = ['„', '“', '»']
   space = ' '
   nbsp = '\u00A0'
 
-  def __init__(self, src, target):
-    self.src_lang = src
-    self.target_lang = target
-
-
   """ Validate and clean input word and append to input list. """
-
   def process_word(self, word, csv_list):
     if self.is_valid_word(word):
       cleaned = self.remove_punctuation(word)
       final = cleaned.replace(self.nbsp, self.space)
       csv_list.append(final)
     return csv_list
-
 
   """ Return true if input word is valid according to the conditions below. """
   def is_valid_word(self, word):
@@ -49,7 +48,6 @@ class Cleaner:
     # return validity status
     return is_valid
 
-
   """ Return true if interior of input word contains punctuation (non-asterisk 
       or dash)."""
   @staticmethod
@@ -65,7 +63,6 @@ class Cleaner:
         contains = True
     return contains
 
-
   """ Return input word with all punctuation removed. """
   @classmethod
   def remove_punctuation(cls, word):
@@ -75,7 +72,6 @@ class Cleaner:
       if (char in string.punctuation) or (char in cls.special_quotes):
         cleaned_word = cls.remove_symbol(cleaned_word, char)
     return cleaned_word
-
 
   """ Return input word with all instances of input symbol removed. """
   @staticmethod
@@ -97,31 +93,26 @@ class Cleaner:
 
     return cleaned_word
 
-
   """ Return true if input word is empty string. """
   @staticmethod
   def is_blank_word(word):
     return word == ''
-
 
   """ Return true if input word is shorter than three characters. """
   @staticmethod
   def is_too_short(word):
     return len(word) < 3
 
-
   """ Return true if input word contains a number. """
   @staticmethod
   def contains_number(word):
     return any(char.isdigit() for char in word)
-
 
   """ Return true if input word is entirely uppercase. """
   # todo is this extra method call necessary?
   @staticmethod
   def contains_all_uppercase(word):
     return word.isupper()
-
 
   # todo adapt to multi-lang dictionaries
   """ Return true if word is English. """
@@ -130,21 +121,20 @@ class Cleaner:
     lang = ""
     return cls.get_english(word) == True
 
-
   """ Executes API call to merriam-webster dictionary API for input word. """
   @staticmethod
   def get_english(word):
     try:
       header_info = {'app_id': '3d637214', 'app_key': '',
                      'Accept': 'application/json'}
-      url = ("https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/en-gb/"
-             + word)
+      url = (
+            "https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/en-gb/"
+            + word)
       web = req.get(url=url, headers=header_info)
       return web.ok
     except Exception as exc:
       print("An exception occurred processing english dictionary entry", exc)
       return False
-
 
   """ Return true if input word contains consecutive uppercase characters. """
   @staticmethod

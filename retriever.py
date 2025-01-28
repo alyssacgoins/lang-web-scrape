@@ -1,8 +1,10 @@
 from bs4 import BeautifulSoup
 import requests as req
 
+""" Retrieve web text. """
 class Retriever:
 
+  """ Initialize Retriever instance. """
   def __init__(self, url):
     self.url = url
 
@@ -20,4 +22,3 @@ class Retriever:
       return soup
     except Exception as exc:
       raise Exception(exc)
-

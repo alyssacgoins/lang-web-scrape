@@ -4,18 +4,18 @@ import concurrent.futures
 import pandas as pd
 import csv
 
+""" Utilize input Retriever and Cleaner to process web text. """
 class Processor:
 
-  # List containing German-language articles
-  articles = ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine', 'einer',
-              'einem', 'einen']
-
-
+  """ Initialize processor instance. """
   def __init__(self, retriever, cleaner):
     self.cleaner = cleaner
     self.retriever = retriever
     self.clear_file('body-text.csv')
 
+  # List containing German-language articles
+  articles = ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine',
+              'einer', 'einem', 'einen']
 
   """ Call processing functions """
   def process(self):
@@ -23,14 +23,12 @@ class Processor:
     # clear csv files
     self.process_body_text(body_text)
 
-
   """ Clear the contents of the file at input filename. """
   @staticmethod
   def clear_file(file_name):
     f = open(file_name, 'w')
     f.truncate()
     f.close()
-
 
   """ Return input BeautifulSoup text in list form. """
   def soup_to_list(self, soup):
@@ -44,7 +42,7 @@ class Processor:
         if word_follows_article:
           word_follows_article = False
           continue
-        # if word is article, retrieve following word & append to list
+        # if word is article, retrieve the word that follows & append to list
         if self.is_article(word):
           substring = self.get_article_and_word(entry, word)
           body_text_entries.append(substring)
@@ -52,9 +50,7 @@ class Processor:
         # append word to list
         else:
           body_text_entries.append(word)
-
     return body_text_entries
-
 
   """ Execute concurrent cleaning for input body_text_entries and write data to
       csv file. """
@@ -73,12 +69,10 @@ class Processor:
         except Exception as exc:
           raise Exception(exc)
 
-
   """ Return true if input word is an article. """
   @classmethod
   def is_article(cls, word):
     return word in cls.articles
-
 
   """ Return substring of input line containing input article and corresponding 
       word. """
@@ -93,8 +87,8 @@ class Processor:
     else:
       return sub_line
 
-
   """ Write input csv list to input csv file name.  """
+
   @staticmethod
   def write_body_text_to_csv(csv_list, csv_file_name):
     # return data by retrieving the tag content
@@ -102,13 +96,12 @@ class Processor:
       writer = csv.writer(csv_file)
       writer.writerow(csv_list)
 
-
   """ Return input dataframe split into chunk_size-sized lists."""
   @staticmethod
   def split_data(dataframe, chunk_size):
     df_list = dataframe.values.flatten().tolist()
-    return [df_list[i:i + chunk_size] for i in range(0, len(df_list), chunk_size)]
-
+    return [df_list[i:i + chunk_size] for i in
+            range(0, len(df_list), chunk_size)]
 
   """ Return input csv list containing each entry of input dataframe, cleaned for
       punctuation and target language. """
@@ -116,7 +109,6 @@ class Processor:
     for item in dataframe:
       self.cleaner.process_word(item, csv_list)
     return csv_list
-
 
   """ Return row_iterator() method call for input dataframe and empty string 
       list. """
