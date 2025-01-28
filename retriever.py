@@ -8,7 +8,7 @@ def scrape_body_text(url):
     response = req.get(url)
 
     # create BeautifulSoup object with html parser
-    soup = BeautifulSoup(response.text, "html.parser")
+    soup = BeautifulSoup(response.text, 'html.parser')
     # remove tags
     for data in soup(['style', 'script']):
       data.decompose()

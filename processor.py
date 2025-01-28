@@ -64,7 +64,6 @@ def process_body_text(body_text_entries):
       try:
         write_body_text_to_csv(future, 'body-text.csv')
       except Exception as exc:
-        print(f"Source generated an exception")
         raise Exception(exc)
 
 

@@ -28,7 +28,6 @@ def process_word(word, csv_list):
     cleaned = remove_punctuation(word)
     final = cleaned.replace('\u00A0', ' ')
     csv_list.append(final)
-    print(cleaned)
   return csv_list
 
 
@@ -142,7 +141,6 @@ def get_english(word):
     return web.ok
   except Exception as exc:
     print("An exception occurred processing english dictionary entry", exc)
-
     return False
 
 
