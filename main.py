@@ -20,8 +20,8 @@ def parse_args():
     parser.add_argument('--target_lang', type=str,
                         choices=target_lang_options,
                         help='Language to translate page')
-    args = parser.parse_args()
-    return args
+    input_args = parser.parse_args()
+    return input_args
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
