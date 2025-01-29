@@ -9,40 +9,44 @@ class Cleaner:
     self.src_lang = src
     self.target_lang = target
 
-  # Additional quotation marks not included in string.punctuation library.
-  special_quotes = ['„', '“', '»']
-  space = ' '
+  # non-breaking space
   nbsp = '\u00A0'
+  # empty space
+  space = ' '
+  # additional quotation marks not included in string.punctuation library.
+  special_quotes = ['„', '“', '»']
 
   """ Validate and clean input word and append to input list. """
-  def process_word(self, word, csv_list):
+  def clean_word(self, word):
     if self.is_valid_word(word):
-      cleaned = self.remove_punctuation(word)
-      final = cleaned.replace(self.nbsp, self.space)
-      csv_list.append(final)
-    return csv_list
+      # if valid word, remove any punctuation at start/end & any nbsp
+      cleaned = self.remove_non_ascii(word)
+      print(cleaned)
+      return cleaned
 
   """ Return true if input word is valid according to the conditions below. """
   def is_valid_word(self, word):
     is_valid = True
 
-    # exclude blank entries
+    # exclude words that are blank
     if self.is_blank_word(word):
       is_valid = False
-    # exclude entries of length 1 or 2
+    # exclude words of length < 3
     elif self.is_too_short(word):
       is_valid = False
     # exclude words in source language
-    elif self.is_src_lang(word, self.src_lang):
+    elif self.is_src_lang(word):
       is_valid = False
-    # exclude numbers
+    # exclude words containing numbers
     elif self.contains_number(word):
       is_valid = False
-    # exclude phrases that contain no lower-case characters
+    # exclude words in all-caps
     elif self.contains_all_uppercase(word):
       is_valid = False
-    elif self.contains_consecutive_uppercase(word):
+    # exclude words with two or more consecutive uppercase
+    elif self.contains_consecutive_uppercase_no_symbol(word):
       is_valid = False
+    # exclude words split by punctuation
     elif self.contains_interior_punctuation(word):
       is_valid = False
     # return validity status
@@ -54,22 +58,26 @@ class Cleaner:
   def contains_interior_punctuation(word):
     contains = False
 
-    valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+', '', '.', '/',
+    valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+', '.', '/',
                      ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
-                     '_', '`', '{', '|', '}', '~', ',']
+                     '_', '`', '{', '|', '}', '~', ',', '„', '“', '»']
 
-    for char in word:
-      if char in valid_symbols:
-        contains = True
+    if len(word) >2:
+      # check for punctuation that appears within a word
+      for char in word[1:-1]:
+        if char in valid_symbols:
+          contains = True
+          break
     return contains
 
-  """ Return input word with all punctuation removed. """
+  """ Return input word with non-ascii characters removed. """
   @classmethod
-  def remove_punctuation(cls, word):
+  def remove_non_ascii(cls, word):
     cleaned_word = word
 
     for char in word:
-      if (char in string.punctuation) or (char in cls.special_quotes):
+      if ((char in string.punctuation) or (char in cls.special_quotes)
+          or (char == cls.nbsp)):
         cleaned_word = cls.remove_symbol(cleaned_word, char)
     return cleaned_word
 
@@ -79,11 +87,11 @@ class Cleaner:
     cleaned_word = word
 
     # remove symbol preceding a word
-    if word.endswith(symbol):
-      cleaned_word = word.split(symbol, 1)[0]
-    # remove symbol at end of word
-    elif word.startswith(symbol):
+    if word.startswith(symbol):
       cleaned_word = word.split(symbol, 1)[1]
+    # remove symbol at end of word
+    elif word.endswith(symbol):
+      cleaned_word = word.split(symbol, 1)[0]
     # remove acronyms separated from word by symbol, as well as symbol
     elif symbol in word:
       cleaned_word = ''
@@ -116,10 +124,11 @@ class Cleaner:
 
   # todo adapt to multi-lang dictionaries
   """ Return true if word is English. """
-  @classmethod
-  def is_src_lang(cls, word, lang):
-    lang = ""
-    return cls.get_english(word) == True
+  def is_src_lang(self, word):
+    lang = self.src_lang
+    # todo fix english dictionary http
+    #return self.get_english(word) == True
+    return False
 
   """ Executes API call to merriam-webster dictionary API for input word. """
   @staticmethod
@@ -136,9 +145,10 @@ class Cleaner:
       print("An exception occurred processing english dictionary entry", exc)
       return False
 
-  """ Return true if input word contains consecutive uppercase characters. """
+  """ Return true if input word contains consecutive uppercase characters, and 
+      no symbol. (e.g. HRT-hallo would return false). """
   @staticmethod
-  def contains_consecutive_uppercase(word):
+  def contains_consecutive_uppercase_no_symbol(word):
     contains = False
 
     for i in (0, len(word) - 2):
