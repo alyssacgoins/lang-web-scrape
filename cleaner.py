@@ -17,12 +17,10 @@ class Cleaner:
   special_quotes = ['„', '“', '»']
 
   """ Validate and clean input word and append to input list. """
-  def process_word(self, word, csv_list):
+  def process_word(self, word):
     if self.is_valid_word(word):
-      cleaned = self.remove_punctuation(word)
-      final = cleaned.replace(self.nbsp, self.space)
-      csv_list.append(final)
-    return csv_list
+      cleaned = self.remove_punctuation(word).replace(self.nbsp, self.space)
+      return cleaned
 
   """ Return true if input word is valid according to the conditions below. """
   def is_valid_word(self, word):

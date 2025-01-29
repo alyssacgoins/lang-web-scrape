@@ -103,14 +103,18 @@ class Processor:
     return [df_list[i:i + chunk_size] for i in
             range(0, len(df_list), chunk_size)]
 
-  """ Return input csv list containing each entry of input dataframe, cleaned for
-      punctuation and target language. """
-  def row_iterator(self, dataframe, csv_list):
-    for item in dataframe:
-      self.cleaner.process_word(item, csv_list)
+  """ Return input csv list containing each entry of input dataframe, cleaned 
+      for punctuation and target language. """
+  def df_iterator(self, dataframe):
+    csv_list = []
+
+    for entry in dataframe:
+      word = self.cleaner.process_word(entry)
+      if word is not None:
+        csv_list.append(self.cleaner.process_word(entry))
     return csv_list
 
   """ Return row_iterator() method call for input dataframe and empty string 
       list. """
   def worker(self, dataframe):
-    return self.row_iterator(dataframe, [''])
+    return self.df_iterator(dataframe)
