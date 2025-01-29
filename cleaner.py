@@ -9,10 +9,12 @@ class Cleaner:
     self.src_lang = src
     self.target_lang = target
 
+  # Non-breaking space
+  nbsp = '\u00A0'
+  # Empty space
+  space = ' '
   # Additional quotation marks not included in string.punctuation library.
   special_quotes = ['„', '“', '»']
-  space = ' '
-  nbsp = '\u00A0'
 
   """ Validate and clean input word and append to input list. """
   def process_word(self, word, csv_list):
