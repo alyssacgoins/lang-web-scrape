@@ -8,6 +8,28 @@ class MyTestCase(unittest.TestCase):
         super().__init__(methodName)
         self.cleaner_instance = cleaner.Cleaner('DE', 'EN')
 
+    def test_process_word_simple(self):
+        word = 'hallo'
+        output_list = self.cleaner_instance.process_word(word, [])
+        self.assertEqual(['hallo'], output_list)
+
+# todo after bug fixes is merged in, update list response to word.
+    def test_process_word_first_punctuation(self):
+        word = '!hallo'
+        output_list = self.cleaner_instance.process_word(word, [])
+        self.assertEqual(['hallo'], output_list)
+
+    # todo after bug fixes is merged in, update list response to word.
+    def test_process_word_last_punctuation(self):
+        word = 'hallo!'
+        output_list = self.cleaner_instance.process_word(word, [])
+        self.assertEqual(['hallo'], output_list)
+
+    def test_process_word_nbsp(self):
+        word = 'hallo\u00A0'
+        output_list = self.cleaner_instance.process_word(word, [])
+        self.assertEqual(['hallo '], output_list)
+
     """ Validate and clean input word and append to input list. """
     def test_is_valid_word_yes(self):
         word = 'hallo'
