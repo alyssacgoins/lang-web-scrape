@@ -17,7 +17,7 @@ class Processor:
   articles = ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine',
               'einer', 'einem', 'einen']
 
-  """ Call processing functions """
+  """ Execute web scraping and process the retrieved text. """
   def process(self):
     body_text = self.soup_to_list(self.retriever.scrape_body_text())
     # clear csv files
@@ -43,7 +43,7 @@ class Processor:
           word_follows_article = False
           continue
         # if word is article, retrieve following word & append pair to list
-        if self.is_article(word):
+        elif self.is_article(word):
           substring = self.get_article_and_word(entry, word)
           body_text_entries.append(substring)
           word_follows_article = True
@@ -52,8 +52,7 @@ class Processor:
           body_text_entries.append(word)
     return body_text_entries
 
-  """ Execute concurrent cleaning for input body_text_entries and write data to
-      csv file. """
+  """ Execute concurrent cleaning on input body text and write data to csv. """
   # todo handle capitalized/non-capitalized duplicates.
   # todo run perf testing to optimize chunk/worker sizing
   def process_body_text(self, body_text_entries):
@@ -75,7 +74,7 @@ class Processor:
   def is_article(cls, word):
     return word in cls.articles
 
-  """ Return substring of input line containing input article and corresponding 
+  """ Return substring of input line containing input article and following 
       word. """
   @staticmethod
   def get_article_and_word(line, article):
@@ -96,7 +95,7 @@ class Processor:
       writer = csv.writer(csv_file)
       writer.writerow(csv_list)
 
-  """ Return input dataframe split into chunk_size-sized lists."""
+  """ Return input dataframe split into input chunk_size-sized lists."""
   @staticmethod
   def split_dataframe(dataframe, chunk_size):
     df_list = dataframe.values.flatten().tolist()
