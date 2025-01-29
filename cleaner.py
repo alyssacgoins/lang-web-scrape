@@ -56,9 +56,9 @@ class Cleaner:
   def contains_interior_punctuation(word):
     contains = False
 
-    valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+', '', '.', '/',
+    valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+', '.', '/',
                      ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
-                     '_', '`', '{', '|', '}', '~', ',']
+                     '_', '`', '{', '|', '}', '~', ',', '„', '“', '»']
 
     if len(word) >2:
       for char in word[1:-1]:
