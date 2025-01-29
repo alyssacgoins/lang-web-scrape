@@ -13,14 +13,14 @@ class Cleaner:
   nbsp = '\u00A0'
   # empty space
   space = ' '
-  # additional quotation marks not included in string.punctuation library.
-  special_quotes = ['„', '“', '»']
+  # additional punctuation not included in string.punctuation library.
+  non_library_punctuation = ['„', '“', '»','€']
 
   """ Validate and clean input word and append to input list. """
   def clean_word(self, word):
     if self.is_valid_word(word):
       # if valid word, remove any punctuation at start/end & any nbsp
-      cleaned = self.remove_non_ascii(word)
+      cleaned = self.remove_nbsp(self.remove_first_last_non_ascii(word))
       print(cleaned)
       return cleaned
 
@@ -58,7 +58,7 @@ class Cleaner:
   def contains_interior_punctuation(word):
     contains = False
 
-    valid_symbols = ['!', '#', '$', '%', '&', '(', ')', '+', '.', '/',
+    valid_symbols = ['!', '#', '$', '€', '%', '&', '(', ')', '+', '.', '/',
                      ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
                      '_', '`', '{', '|', '}', '~', ',', '„', '“', '»']
 
@@ -72,14 +72,18 @@ class Cleaner:
 
   """ Return input word with non-ascii characters removed. """
   @classmethod
-  def remove_non_ascii(cls, word):
+  def remove_first_last_non_ascii(cls, word):
     cleaned_word = word
 
     for char in word:
-      if ((char in string.punctuation) or (char in cls.special_quotes)
-          or (char == cls.nbsp)):
+      if (char in string.punctuation) or (char in cls.non_library_punctuation):
         cleaned_word = cls.remove_symbol(cleaned_word, char)
     return cleaned_word
+
+  @classmethod
+  def remove_nbsp(cls, word):
+    return word.replace(cls.nbsp, '')
+
 
   """ Return input word with all instances of input symbol removed. """
   @staticmethod
