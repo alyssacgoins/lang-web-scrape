@@ -60,9 +60,10 @@ class Cleaner:
                      ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^',
                      '_', '`', '{', '|', '}', '~', ',']
 
-    for char in word:
-      if char in valid_symbols:
-        contains = True
+    if len(word) >2:
+      for char in word[1:-1]:
+        if char in valid_symbols:
+          contains = True
     return contains
 
   """ Return input word with all punctuation removed. """
