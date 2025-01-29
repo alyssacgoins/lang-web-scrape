@@ -13,11 +13,11 @@ class Processor:
     self.retriever = retriever
     self.clear_file('body-text.csv')
 
-  # List containing German-language articles
+  # list containing German-language articles
   articles = ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine',
               'einer', 'einem', 'einen']
 
-  """ Call processing functions """
+  """ Execute web scraping and process the retrieved text. """
   def process(self):
     body_text = self.soup_to_list(self.retriever.scrape_body_text())
     # clear csv files
@@ -38,12 +38,12 @@ class Processor:
 
       word_follows_article = False
       for word in entry.split():
-        # if word directly follows an article, skip
+        # if word directly follows an article, skip word (already processed)
         if word_follows_article:
           word_follows_article = False
           continue
-        # if word is article, retrieve the word that follows & append to list
-        if self.is_article(word):
+        # if word is article, retrieve following word & append pair to list
+        elif self.is_article(word):
           substring = self.get_article_and_word(entry, word)
           body_text_entries.append(substring)
           word_follows_article = True
@@ -52,15 +52,15 @@ class Processor:
           body_text_entries.append(word)
     return body_text_entries
 
-  """ Execute concurrent cleaning for input body_text_entries and write data to
-      csv file. """
+  """ Execute concurrent cleaning on input body text and write data to csv. """
+  # todo handle capitalized/non-capitalized duplicates.
+  # todo run perf testing to optimize chunk/worker sizing
   def process_body_text(self, body_text_entries):
-    # remove duplicate words via pandas DataFrame
-    dataframe = pd.DataFrame(body_text_entries)
-    dataframe = dataframe.drop_duplicates()
-    # split dataframe
-    chunks = self.split_data(dataframe, 10)
+    # create dataframe from input list, remove duplicates & split into chunks
+    dataframe = pd.DataFrame(body_text_entries).drop_duplicates()
+    chunks = self.split_dataframe(dataframe, 100)
 
+    # concurrently clean dataframe entries & write output to body-text.csv
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
       futures = list(executor.map(self.worker, chunks))
       for future in futures:
@@ -74,13 +74,13 @@ class Processor:
   def is_article(cls, word):
     return word in cls.articles
 
-  """ Return substring of input line containing input article and corresponding 
+  """ Return substring of input line containing input article and following 
       word. """
   @staticmethod
   def get_article_and_word(line, article):
-    # retrieve the substring of the line after first identified article
+    # retrieve the substring of the line following the first identified article
     sub_line = line[line.find(article):]
-    # if article contains >1 space:
+    # if substring contains > 1 space, the space directly next is the end of the string
     if sub_line.count(' ') > 1:
       end_index = sub_line.find(' ', sub_line.find(' ') + 1)
       return sub_line[0:end_index]
@@ -88,7 +88,6 @@ class Processor:
       return sub_line
 
   """ Write input csv list to input csv file name.  """
-
   @staticmethod
   def write_body_text_to_csv(csv_list, csv_file_name):
     # return data by retrieving the tag content
@@ -96,21 +95,24 @@ class Processor:
       writer = csv.writer(csv_file)
       writer.writerow(csv_list)
 
-  """ Return input dataframe split into chunk_size-sized lists."""
+  """ Return input dataframe split into input chunk_size-sized lists."""
   @staticmethod
-  def split_data(dataframe, chunk_size):
+  def split_dataframe(dataframe, chunk_size):
     df_list = dataframe.values.flatten().tolist()
     return [df_list[i:i + chunk_size] for i in
             range(0, len(df_list), chunk_size)]
 
-  """ Return input csv list containing each entry of input dataframe, cleaned for
+  """ Return csv list containing each entry of input dataframe, cleaned for 
       punctuation and target language. """
-  def row_iterator(self, dataframe, csv_list):
-    for item in dataframe:
-      self.cleaner.process_word(item, csv_list)
+  def clean_dataframe(self, dataframe):
+    csv_list = []
+
+    for entry in dataframe:
+      word = self.cleaner.clean_word(entry)
+      if word is not None:
+        csv_list.append(word)
     return csv_list
 
-  """ Return row_iterator() method call for input dataframe and empty string 
-      list. """
+  """ Return clean_dataframe() method call on input dataframe. """
   def worker(self, dataframe):
-    return self.row_iterator(dataframe, [''])
+    return self.clean_dataframe(dataframe)
