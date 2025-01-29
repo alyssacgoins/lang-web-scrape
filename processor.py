@@ -109,9 +109,9 @@ class Processor:
     csv_list = []
 
     for entry in dataframe:
-      word = self.cleaner.process_word(entry)
+      word = self.cleaner.clean_word(entry)
       if word is not None:
-        csv_list.append(self.cleaner.process_word(entry))
+        csv_list.append(self.cleaner.clean_word(entry))
     return csv_list
 
   """ Return row_iterator() method call for input dataframe and empty string 

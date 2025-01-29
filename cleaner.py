@@ -17,8 +17,9 @@ class Cleaner:
   special_quotes = ['„', '“', '»']
 
   """ Validate and clean input word and append to input list. """
-  def process_word(self, word):
+  def clean_word(self, word):
     if self.is_valid_word(word):
+      # if valid word, remove any punctuation at start/end & any nbsp
       cleaned = self.remove_punctuation(word).replace(self.nbsp, self.space)
       return cleaned
 
