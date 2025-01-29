@@ -33,7 +33,7 @@ class Cleaner:
     elif self.is_too_short(word):
       is_valid = False
     # exclude words in source language
-    elif self.is_src_lang(word, self.src_lang):
+    elif self.is_src_lang(word):
       is_valid = False
     # exclude numbers
     elif self.contains_number(word):
@@ -116,10 +116,9 @@ class Cleaner:
 
   # todo adapt to multi-lang dictionaries
   """ Return true if word is English. """
-  @classmethod
-  def is_src_lang(cls, word, lang):
-    lang = ""
-    return cls.get_english(word) == True
+  def is_src_lang(self, word):
+    lang = self.src_lang
+    return self.get_english(word) == True
 
   """ Executes API call to merriam-webster dictionary API for input word. """
   @staticmethod
