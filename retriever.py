@@ -10,7 +10,7 @@ class Retriever:
 
   """ Scrapes data from instance webpage and returns the body text in the form 
     of a string list. """
-  def scrape_body_text(self):
+  def retrieve_body_text(self):
     try:
       response = req.get(self.url)
 
