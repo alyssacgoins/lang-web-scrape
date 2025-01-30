@@ -1,7 +1,7 @@
 import string
 import requests as req
 
-""" Clean web text. """
+""" Clean html body text. """
 class Cleaner:
 
   """ Initialize Cleaner instance. """
