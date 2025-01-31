@@ -18,7 +18,7 @@ def parse_args():
     input_args = parser.parse_args()
     return input_args
 
-# Press the green button in the gutter to run the script.
+""" Program driver """
 if __name__ == '__main__':
     args = parse_args()
     url = args.url
@@ -31,6 +31,12 @@ if __name__ == '__main__':
     # use src lang arg if specified. otherwise, default 'DE' used.
     if args.src_lang is not None:
         target_lang = args.src_lang
-    # process input url
-    processor = Processor(Retriever(url), Cleaner(src_lang, target_lang))
-    processor.process()
+
+    # instantiate retriever, processor & cleaner
+    retriever = Retriever(url)
+    processor = Processor(Cleaner(src_lang, target_lang))
+
+    # retrieve body text
+    retrieved = retriever.retrieve_body_text()
+    # clean retrieved text and save to csv
+    processor.process_body_text(retrieved)

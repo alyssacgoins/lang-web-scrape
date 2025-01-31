@@ -18,11 +18,12 @@ class Cleaner:
 
   """ Validate and clean input word and append to input list. """
   def clean_word(self, word):
+    cleaned = ''
     if self.is_valid_word(word):
       # if valid word, remove any punctuation at start/end & any nbsp
       cleaned = self.remove_nbsp(self.remove_first_last_non_ascii(word))
       print(cleaned)
-      return cleaned
+    return cleaned
 
   """ Return true if input word is valid according to the conditions below. """
   def is_valid_word(self, word):

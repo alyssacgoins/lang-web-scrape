@@ -39,11 +39,11 @@ class Retriever:
 
   """ Raises an exception based on the content of input HTTP response. """
   def handle_unsuccessful_response(self, response):
-    # if status code is OK but webpage is empty:
+    # if status code is OK (200) but webpage is empty:
     if response.status_code is status.OK:
-      raise req.exceptions.HTTPError("Error: " + self.url + " is blank")
+      raise req.exceptions.HTTPError()
 
-    # if status code is not OK:
+    # if status code is not OK (200):
     else:
       raise req.exceptions.HTTPError("Error [" + str(response.status_code) +
             "] connecting to " + self.url + ". Exiting program.")
@@ -81,7 +81,7 @@ class Retriever:
   def get_article_and_word(line, article):
     # retrieve the substring of the line following the first identified article
     sub_line = line[line.find(article):]
-    # if substring contains > 1 space, the space directly next is the end of the string
+    # if substring contains > 1 space, the substring ends after the next space.
     if sub_line.count(' ') > 1:
       end_index = sub_line.find(' ', sub_line.find(' ') + 1)
       return sub_line[0:end_index]
