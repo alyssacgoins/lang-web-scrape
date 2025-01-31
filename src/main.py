@@ -1,6 +1,6 @@
 from processor import Processor
 from retriever import Retriever
-from cleaner import Cleaner
+from src.cleaner import Cleaner
 import argparse
 
 

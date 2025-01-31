@@ -14,7 +14,7 @@ class Cleaner:
   # empty space
   space = ' '
   # additional punctuation not included in string.punctuation library.
-  non_library_punctuation = ['„', '“', '»','€']
+  non_library_punctuation = '„“»€'
 
   """ Validate and clean input word and append to input list. """
   def clean_word(self, word):

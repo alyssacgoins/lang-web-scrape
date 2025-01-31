@@ -3,13 +3,12 @@ import os
 import csv
 import pandas as pd
 
-import processor
-import cleaner
+from src import cleaner, processor
 
 import mockito
 from mockito import when
 
-
+""" Processor unit test. """
 class MyTestCase(unittest.TestCase):
 
   def __init__(self, methodName: str = "runTest"):
@@ -17,28 +16,22 @@ class MyTestCase(unittest.TestCase):
     self.mock_cleaner = mockito.mock(cleaner.Cleaner('', ''))
     self.processor_instance = processor.Processor(self.mock_cleaner)
 
-
   @classmethod
   def setUpClass(cls):
     # write to sample csv
-    with open('filled-test-csv.csv', 'w') as csv_file:
+    with open('sample_files/filled-test-csv.csv', 'w') as csv_file:
       writer = csv.writer(csv_file)
       writer.writerow(['sample', 'csv', 'text'])
 
   def test_clear_file_non_empty_file(self):
     self.processor_instance.clear_file('filled-test-csv.csv')
-    is_empty = os.stat('filled-test-csv.csv').st_size == 0
+    is_empty = os.stat('sample_files/filled-test-csv.csv').st_size == 0
     self.assertEqual(True, is_empty)
 
   def test_clear_file_empty_file(self):
     self.processor_instance.clear_file('empty-test-csv.csv')
-    is_empty = os.stat('empty-test-csv.csv').st_size == 0
+    is_empty = os.stat('sample_files/empty-test-csv.csv').st_size == 0
     self.assertEqual(True, is_empty)
-
-#todo mock soup object
-  # """ Handle case of empty soup. """
-  # def test_soup_to_list_empty(self):
-  #   self.processor_instance.soup_to_list()
 
   def test_split_dataframe_empty(self):
     # set up sample dataframe with an empty list
@@ -78,6 +71,7 @@ class MyTestCase(unittest.TestCase):
     clean_list = self.processor_instance.clean_list(test_list)
     self.processor_instance.clean_list(test_list)
     self.assertEqual([], clean_list)
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -1,20 +1,14 @@
 import http
 import unittest
 
-import retriever
+from bs4 import BeautifulSoup
+
+from src import retriever
 import requests as req
 import mockito
 from mockito import when
 
-# todo update this wording.
-class MockResponse:
-  def __init__(self, text, status_code):
-    self.text = text
-    self.status_code = status_code
-
-  def json(self):
-    return self.text
-
+""" Retriever unit test. """
 class MyTestCase(unittest.TestCase):
 
   def __init__(self, methodName: str = "runTest"):
@@ -22,30 +16,32 @@ class MyTestCase(unittest.TestCase):
     self.retriever_instance = retriever.Retriever('https://test-url')
     self.retriever_instance.req = mockito.mock(req)
 
-
   def test_retrieve_body_text_200(self):
-    with open('sample.html', 'r') as f:
+    with open('sample_files/sample.html', 'r') as f:
       html_content = f.read()
       when(req).get('https://test-url').thenReturn(
-                      MockResponse(html_content, http.HTTPStatus.OK))
+        MockHttpResponse(html_content, http.HTTPStatus.OK))
       body_text_list = self.retriever_instance.retrieve_body_text()
-      # todo compare lists, not lengths
-      self.assertEqual(2991, len(body_text_list))
+      self.assertEqual(['Heading', 'Sample', 'paragraph.'], body_text_list)
 
   def test_retrieve_body_text_200_empty(self):
     when(req).get('https://test-url').thenReturn(
-                    MockResponse('', http.HTTPStatus.OK))
+      MockHttpResponse('', http.HTTPStatus.OK))
     self.assertRaises(req.exceptions.HTTPError,
                       lambda: self.retriever_instance.retrieve_body_text())
 
   def test_retrieve_body_text_non_200(self):
     when(req).get('https://test-url').thenReturn(
-                      MockResponse({}, http.HTTPStatus.FORBIDDEN))
+      MockHttpResponse({}, http.HTTPStatus.FORBIDDEN))
     self.assertRaises(Exception,
                       lambda: self.retriever_instance.retrieve_body_text())
 
-  #def test_soup_to_list_success(self):
-    #body_text_entries = self.retriever_instance.soup_to_list(sou)
+  def test_soup_to_list_success(self):
+    with open('sample_files/sample.html', 'r') as f:
+      html_content = f.read()
+      soup = BeautifulSoup(html_content, 'html.parser')
+      body_text_entries = self.retriever_instance.soup_to_list(soup)
+      self.assertEqual(['Heading', 'Sample', 'paragraph.'], body_text_entries)
 
   def test_is_article_false(self):
     is_article = self.retriever_instance.is_article('hallo')
@@ -77,5 +73,15 @@ class MyTestCase(unittest.TestCase):
       'die Katze sind', 'die')
     self.assertEqual('die Katze', article_and_word)
 
+
 if __name__ == '__main__':
   unittest.main()
+
+""" Mock HttpResponse used for testing. """
+class MockHttpResponse:
+  def __init__(self, text, status_code):
+    self.text = text
+    self.status_code = status_code
+
+  def json(self):
+    return self.text

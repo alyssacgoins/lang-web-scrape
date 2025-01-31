@@ -10,7 +10,7 @@ class Processor:
   """ Initialize processor instance. """
   def __init__(self, cleaner):
     self.cleaner = cleaner
-    self.clear_file('body-text.csv')
+    self.clear_file('../body-text.csv')
 
   """ Execute concurrent cleaning on input body text and write data to csv. """
   # todo handle capitalized/non-capitalized duplicates.

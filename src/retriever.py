@@ -20,9 +20,7 @@ class Retriever:
     response_text = self.get_page_text()
     # create BeautifulSoup object with html parser
     soup = BeautifulSoup(response_text, 'html.parser')
-    # remove tags
-    for data in soup(['style', 'script']):
-      data.decompose()
+
     return self.soup_to_list(soup)
 
   """ Return scraped data from self.url. """
@@ -50,6 +48,9 @@ class Retriever:
 
   """ Return input BeautifulSoup text in list form. """
   def soup_to_list(self, soup):
+    # remove tags
+    for data in soup(['style', 'script']):
+      data.decompose()
     # create string list of body text entries
     body_text_entries = []
     for entry in soup.stripped_strings:
