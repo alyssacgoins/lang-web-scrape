@@ -35,9 +35,6 @@ class Cleaner:
     # exclude words of length < 3
     elif self.is_too_short(word):
       is_valid = False
-    # exclude words in source language
-    elif self.is_src_lang(word):
-      is_valid = False
     # exclude words containing numbers
     elif self.contains_number(word):
       is_valid = False
@@ -126,29 +123,6 @@ class Cleaner:
   @staticmethod
   def contains_all_uppercase(word):
     return word.isupper()
-
-  # todo adapt to multi-lang dictionaries
-  """ Return true if word is English. """
-  def is_src_lang(self, word):
-    lang = self.src_lang
-    # todo fix english dictionary http
-    #return self.get_english(word) == True
-    return False
-
-  """ Executes API call to merriam-webster dictionary API for input word. """
-  @staticmethod
-  def get_english(word):
-    try:
-      header_info = {'app_id': '3d637214', 'app_key': '',
-                     'Accept': 'application/json'}
-      url = (
-            "https://od-api-sandbox.oxforddictionaries.com/api/v2/entries/en-gb/"
-            + word)
-      web = req.get(url=url, headers=header_info)
-      return web.ok
-    except Exception as exc:
-      print("An exception occurred processing english dictionary entry", exc)
-      return False
 
   """ Return true if input word contains consecutive uppercase characters, and 
       no symbol. (e.g. HRT-hallo would return false). """

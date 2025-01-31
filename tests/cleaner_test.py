@@ -72,8 +72,6 @@ class MyTestCase(unittest.TestCase):
     is_valid = self.cleaner_instance.is_valid_word(word)
     self.assertEqual(False, is_valid)
 
-  # todo: implement is_src_lang testing.
-
   def test_is_valid_word_contains_num(self):
     word = 'h5allo'
     is_valid = self.cleaner_instance.is_valid_word(word)
