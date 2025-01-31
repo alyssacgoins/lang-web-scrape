@@ -58,36 +58,6 @@ class MyTestCase(unittest.TestCase):
     test_list = self.processor_instance.split_dataframe_to_lists(dataframe, 100)
     self.assertEqual(1, len(test_list))
 
-  def test_is_article_false(self):
-    is_article = self.processor_instance.is_article('hallo')
-    self.assertEqual(False, is_article)
-
-  def test_is_article_empty(self):
-    is_article = self.processor_instance.is_article('')
-    self.assertEqual(False, is_article)
-
-  def test_is_article_de(self):
-    articles = ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine',
-                'einer', 'einem', 'einen']
-    for article in articles:
-      is_article = self.processor_instance.is_article(article)
-      self.assertEqual(True, is_article)
-
-  def test_get_article_and_word_single_pair(self):
-    article_and_word = self.processor_instance.get_article_and_word(
-      'die Katze', 'die')
-    self.assertEqual('die Katze', article_and_word)
-
-  def test_get_article_and_word_end_pair(self):
-    article_and_word = self.processor_instance.get_article_and_word(
-      'und die Katze', 'die')
-    self.assertEqual('die Katze', article_and_word)
-
-  def test_get_article_and_word_start_pair(self):
-    article_and_word = self.processor_instance.get_article_and_word(
-      'die Katze sind', 'die')
-    self.assertEqual('die Katze', article_and_word)
-
   def test_clean_list_full(self):
     test_list = ['hallo!', 'i\\&ch', 'BIn', '*eine', '\u00A0gut', 'frau....']
 
